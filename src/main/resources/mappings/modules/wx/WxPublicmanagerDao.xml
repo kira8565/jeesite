@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.wx.dao.WxPublicmanagerDao">
+    
+	<sql id="wxPublicmanagerColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.wxname AS "wxname",
+		a.rawid AS "rawid",
+		a.appid AS "appid",
+		a.appsecret AS "appsecret",
+		a.token AS "token",
+		a.aes_key AS "aesKey",
+		a.wxtypes AS "wxtypes",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.wx_encode_way AS "wxEncodeWay"
+	</sql>
+	
+	<sql id="wxPublicmanagerJoins">
+	</sql>
+    
+	<select id="get" resultType="WxPublicmanager">
+		SELECT 
+			<include refid="wxPublicmanagerColumns"/>
+		FROM wx_publicmanager a
+		<include refid="wxPublicmanagerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WxPublicmanager">
+		SELECT 
+			<include refid="wxPublicmanagerColumns"/>
+		FROM wx_publicmanager a
+		<include refid="wxPublicmanagerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="wxname != null and wxname != ''">
+				AND a.wxname = #{wxname}
+			</if>
+			<if test="wxtypes != null and wxtypes != ''">
+				AND a.wxtypes = #{wxtypes}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WxPublicmanager">
+		SELECT 
+			<include refid="wxPublicmanagerColumns"/>
+		FROM wx_publicmanager a
+		<include refid="wxPublicmanagerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wx_publicmanager(
+			id,
+			name,
+			wxname,
+			rawid,
+			appid,
+			appsecret,
+			token,
+			aes_key,
+			wxtypes,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			wx_encode_way
+		) VALUES (
+			#{id},
+			#{name},
+			#{wxname},
+			#{rawid},
+			#{appid},
+			#{appsecret},
+			#{token},
+			#{aesKey},
+			#{wxtypes},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{wxEncodeWay}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wx_publicmanager SET 	
+			name = #{name},
+			wxname = #{wxname},
+			rawid = #{rawid},
+			appid = #{appid},
+			appsecret = #{appsecret},
+			token = #{token},
+			aes_key = #{aesKey},
+			wxtypes = #{wxtypes},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			wx_encode_way = #{wxEncodeWay}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE wx_publicmanager SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
